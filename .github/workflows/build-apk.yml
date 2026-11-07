@@ -1,0 +1,38 @@
+
+name: Build Chess Master APK
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'Chess_Master_Android_Starter.zip'
+      - '.github/workflows/build-apk.yml'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Extract Android project
+        run: unzip -q Chess_Master_Android_Starter.zip -d project
+
+      - name: Build APK
+        uses: gradle/gradle-build-action@v3
+        with:
+          gradle-version: '8.9'
+          arguments: -p project assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Chess-Master-APK
+          path: project/app/build/outputs/apk/debug/app-debug.apk
+          
